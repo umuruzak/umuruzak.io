@@ -1,23 +1,40 @@
-<?php
-$to  = urldecode(htmlspecialchars($contacts));  // обратите внимание на запятую
+<?php 
 
-// тема письма
-$subject = 'Отзыв о Хумусии Циммес';
+require_once('phpmailer/PHPMailerAutoload.php');
+$mail = new PHPMailer;
+$mail->CharSet = 'utf-8';
 
-// текст письма
-$message = 'Уважаемый ' . $_POST['name'] . ', Вы оставили негативный отзыв:<br />' . $_POST['message'] . '<br />
-Помогите нам стать лучше <a href="mailto:' . $_POST['email'] . '">' . $_POST['email'] . '</a>'
-;
+$name = $_POST["name"];
+$contacts = $_POST["contacts"];
+//$email = $_POST['user_email'];
 
-// Для отправки HTML-письма должен быть установлен заголовок Content-type
-$headers  = 'MIME-Version: 1.0' . "\r\n";
-$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n"; 
+//$mail->SMTPDebug = 3;                               // Enable verbose debug output
 
-// Дополнительные заголовки
-//$headers .= 'From: Иван <Ivan@example.com>' . "\r\n"; // Свое имя и email
-//$headers .= 'From: '  . $_POST['name'] . '<' . $_POST['email'] . '>' . "\r\n";
+$mail->isSMTP();                                      // Set mailer to use SMTP
+$mail->Host = 'smtp.mail.ru';  																							// Specify main and backup SMTP servers
+$mail->SMTPAuth = true;                               // Enable SMTP authentication
+$mail->Username = 'dzharuzov@mail.ru'; // Ваш логин от почты с которой будут отправляться письма
+$mail->Password = '$dk820&123'; // Ваш пароль от почты с которой будут отправляться письма
+$mail->SMTPSecure = 'ssl';                            // Enable TLS encryption, `ssl` also accepted
+$mail->Port = 465; // TCP port to connect to / этот порт может отличаться у других провайдеров
 
+$mail->setFrom('dzharuzov@mail.ru'); // от кого будет уходить письмо?
+$mail->addAddress('ed.umurzakov@mail.ru');     // Кому будет уходить письмо 
+//$mail->addAddress('ellen@example.com');               // Name is optional
+//$mail->addReplyTo('info@example.com', 'Information');
+//$mail->addCC('cc@example.com');
+//$mail->addBCC('bcc@example.com');
+//$mail->addAttachment('/var/tmp/file.tar.gz');         // Add attachments
+//$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
+$mail->isHTML(true);                                  // Set email format to HTML
 
-// Отправляем
-mail($to, $subject, $message);
+$mail->Subject = 'Заявка с тестового сайта';
+$mail->Body    = '' .$name . ' оставил заявку, его телефон ' .$contacts. '<br>Почта этого пользователя: ';
+$mail->AltBody = '';
+
+if(!$mail->send()) {
+    echo 'Error';
+} else {
+    header('location: thank-you.html');
+}
 ?>
